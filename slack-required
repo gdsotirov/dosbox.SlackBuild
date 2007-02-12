@@ -1,0 +1,5 @@
+libpng
+sdl >= 1.2
+svgalib
+x11
+zlib

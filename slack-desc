@@ -1,0 +1,11 @@
+dosbox: DOSBox (a x86 emulator with DOS)
+dosbox:
+dosbox: Dosbox is an x86/DOS emulator with sound/graphics that uses the SDL
+dosbox: library. Dosbox can emulate the 286/386 CPUs in real/protected mode,
+dosbox: XNS/EMS, FAT Filesystem, Tandy/Hercules/CGA/EGA/VGA/VESA graphics
+dosbox: and Soundblaster / GUS sound cards.
+dosbox:
+dosbox:
+dosbox:
+dosbox: Packaged by Georgi D. Sotirov <gdsotirov@dir.bg>
+dosbox:
