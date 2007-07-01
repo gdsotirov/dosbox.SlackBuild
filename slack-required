@@ -1,5 +1,5 @@
-libpng
-sdl >= 1.2
-svgalib
-x11
-zlib
+libpng >= 1.2.18
+sdl >= 1.2.11
+svgalib >= 1.4.3
+x11 >= 6.9.0
+zlib >= 1.2.3
