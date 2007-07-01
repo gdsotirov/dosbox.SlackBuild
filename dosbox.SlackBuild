@@ -7,7 +7,7 @@
 . /etc/slack-package.conf
 
 NAME=dosbox
-VERSION=0.65
+VERSION=0.70
 BUILD=1
 ARCH=${ARCH:-i486}
 
