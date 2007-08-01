@@ -4,10 +4,10 @@
 # Written by Georgi D. Sotirov <gdsotirov@dir.bg>
 #
 
-. /etc/slack-package.conf
+. ../slack-package.conf
 
 NAME=dosbox
-VERSION=0.70
+VERSION=0.71
 BUILD=1
 ARCH=${ARCH:-i486}
 
@@ -20,15 +20,19 @@ fix_source
 CFLAGS=$SLKCFLAGS \
 CXXFLAGS=$SLKCFLAGS \
 ./configure --build=$ARCH-slackware-linux \
+            --host=$ARCH-slackware-linux \
             --prefix=/usr \
-	    --enable-core-inline
-make
+	    --mandir=/usr/man \
+            --enable-core-inline
+
+make || exit 1
 
 PKG="$TMP/package-$NAME"
 mkdir -p $PKG
 
 make DESTDIR=$PKG install
 
+( cd $PKG; strip_bin )
 sbin_perms $PKG
 strip_bin $PKG
 gzip_man $PKG
