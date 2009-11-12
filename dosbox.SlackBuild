@@ -7,13 +7,34 @@
 . ../slack-package.conf
 
 NAME=dosbox
-VERSION=0.72
-BUILD=2
+VERSION=0.73
+BUILD=1
 ARCH=${ARCH:-i486}
 
+TMP=${TMP:-/tmp}
+CWD=${CWD:-`pwd`}
+PKG_DIR=${PKG_DIR:-/tmp}
+
+if [ ! -e $TMP ]; then
+  mkdir -p $TMP # location to build the source
+fi
+
+SRC=$TMP/$NAME-$VERSION
+if [ -e $SRC -a -d $SRC ]; then
+  echo "Source directory '$SRC' already exists! Plaese, move it or remove it."
+  exit 1
+fi
+
+PKG=$TMP/package-$NAME
+if [ -e $PKG -a -d $PKG ]; then
+  echo "Package creation directory '$PKG' already exists! Please, move it or remove it."
+  exit 2
+fi
+mkdir -p $PKG
+
+# Extract the source
 cd $TMP
 tar -zxvf $CWD/$NAME-$VERSION.tar.gz
-SRC=$TMP/$NAME-$VERSION
 cd $SRC
 fix_source
 
@@ -22,21 +43,21 @@ CXXFLAGS=$SLKCFLAGS \
 ./configure --build=$ARCH-slackware-linux \
             --host=$ARCH-slackware-linux \
             --prefix=/usr \
+            --sysconfdir=/etc \
+            --localstatedir=/var \
 	    --mandir=/usr/man \
-            --enable-core-inline
+            --docdir=/usr/doc/$NAME-$VERSION || exit 1
 
-make || exit 1
+make -j2 || exit 2
 
-PKG="$TMP/package-$NAME"
-mkdir -p $PKG
+make DESTDIR=$PKG install || exit 3
 
-make DESTDIR=$PKG install
-
+bin_perms $PKG
 ( cd $PKG; strip_bin )
-sbin_perms $PKG
-strip_bin $PKG
 gzip_man $PKG
+DOCFILES="$DOCFILES docs/PORTING docs/README.video"
 create_docs $PKG $NAME-$VERSION
+rm -rf $PKG/usr/doc/$NAME-$VERSION/docs
 
 mkdir -p $PKG/install
 install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
@@ -49,9 +70,9 @@ install -m 644 $CWD/$NAME.SlackBuild $PKG/usr/src/slackbuilds/$NAME-$VERSION
 
 cd $PKG
 PKGNAME=$NAME-$VERSION-$ARCH-$BUILD$MYIN
-makepkg -l y -c n $PKG_DIR/$PKGNAME.tgz
+makepkg -l y -c n $PKG_DIR/$PKGNAME.txz
 cd $PKG_DIR
-md5sum $PKGNAME.tgz > $PKGNAME.tgz.md5
+md5sum $PKGNAME.txz > $PKGNAME.txz.md5
 cat $PKG/install/slack-desc > $PKG_DIR/$PKGNAME.txt
 
 if [ "$1" == "--cleanup" ]; then
