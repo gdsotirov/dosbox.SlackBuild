@@ -2,18 +2,18 @@
 #
 # SlackBuild for DOSBox
 # Written by Georgi D. Sotirov <gdsotirov@dir.bg>
+# Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
 
 . ../slack-package.conf
 
 NAME=dosbox
-VERSION=0.73
-BUILD=1
+VERSION=0.74
+BUILD=${BUILD:-1}
 ARCH=${ARCH:-i486}
 
 TMP=${TMP:-/tmp}
 CWD=${CWD:-`pwd`}
-PKG_DIR=${PKG_DIR:-/tmp}
 
 if [ ! -e $TMP ]; then
   mkdir -p $TMP # location to build the source
@@ -34,10 +34,11 @@ mkdir -p $PKG
 
 # Extract the source
 cd $TMP
-tar -zxvf $CWD/$NAME-$VERSION.tar.gz
+tar -xvf $CWD/$NAME-$VERSION.tar.gz
 cd $SRC
 fix_source
 
+# Configure
 CFLAGS=$SLKCFLAGS \
 CXXFLAGS=$SLKCFLAGS \
 ./configure --build=$ARCH-slackware-linux \
@@ -48,10 +49,11 @@ CXXFLAGS=$SLKCFLAGS \
 	    --mandir=/usr/man \
             --docdir=/usr/doc/$NAME-$VERSION || exit 1
 
+# Build & install
 make -j2 || exit 2
-
 make DESTDIR=$PKG install || exit 3
 
+# Prepare
 bin_perms $PKG
 ( cd $PKG; strip_bin )
 gzip_man $PKG
